@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
 
-function App() {
-  const [count, setCount] = useState(0)
+import useMovies from './custom-hooks/useMovies';
+import Home from './pages/Home';
+import './App.css';
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+export interface IYearAndPageState {
+  upScroll: {
+    pageNum: number;
+    year: string;
+  };
+  downScroll: {
+    pageNum: number;
+    year: string;
+  };
 }
 
-export default App
+export const yearAndPageInitialState = {
+  upScroll: { pageNum: 1, year: '2011' },
+  downScroll: { pageNum: 1, year: '2012' },
+};
+
+function App() {
+  const [yearAndPageState, setYearAndPageState] = useState<IYearAndPageState>(
+    yearAndPageInitialState
+  );
+  const [isDownScrolled, setIsDownScrolled] = useState(true);
+  const { resultsUp, resultsDown, isLoading, hasNextPageForDown } = useMovies(
+    yearAndPageState,
+    isDownScrolled,
+    setIsDownScrolled,
+    ''
+  );
+
+  return (
+    <Home
+      resultsUp={resultsUp}
+      resultsDown={resultsDown}
+      isLoading={isLoading}
+      hasNextPageForDown={hasNextPageForDown}
+      setYearAndPageState={setYearAndPageState}
+      setIsDownScrolled={setIsDownScrolled}
+    />
+  );
+}
+
+export default App;
